@@ -29,13 +29,13 @@ from chef_client_common.chef_client import set_up_chef_client, run_chef
 
 @celery.task
 @set_up_chef_client
-def install(chef_install_runlist, chef_attributes, **kwargs):
+def install(chef_install_runlist=None, chef_attributes=None, **kwargs):
     run_chef(chef_install_runlist, chef_attributes)
 
 
 @celery.task
 @set_up_chef_client
-def start(__cloudify_id, chef_start_runlist, chef_attributes, policy_service, **kwargs):
+def start(__cloudify_id, policy_service, chef_start_runlist=None, chef_attributes=None, **kwargs):
     run_chef(chef_start_runlist, chef_attributes)
     host = get_cosmo_properties()['ip']
     send_event(__cloudify_id, host, policy_service, "state", "running")
@@ -43,18 +43,18 @@ def start(__cloudify_id, chef_start_runlist, chef_attributes, policy_service, **
 
 @celery.task
 @set_up_chef_client
-def stop(chef_stop_runlist, chef_attributes, **kwargs):
+def stop(chef_stop_runlist=None, chef_attributes=None, **kwargs):
     run_chef(chef_stop_runlist, chef_attributes)
 
 
 @celery.task
 @set_up_chef_client
-def restart(chef_start_runlist, chef_stop_runlist, chef_attributes, **kwargs):
+def restart(chef_start_runlist=None, chef_stop_runlist=None, chef_attributes=None, **kwargs):
     run_chef(chef_stop_runlist, chef_attributes)
     run_chef(chef_start_runlist, chef_attributes)
 
 
 @celery.task
 @set_up_chef_client
-def uninstall(chef_uninstall_runlist, chef_attributes, **kwargs):
+def uninstall(chef_uninstall_runlist=None, chef_attributes=None, **kwargs):
     run_chef(chef_uninstall_runlist, chef_attributes)
