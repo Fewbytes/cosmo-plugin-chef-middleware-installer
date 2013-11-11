@@ -24,37 +24,32 @@ and run the relevant runlist using the chef_client module.
 
 from cosmo.events import send_event, get_cosmo_properties
 from cosmo.celery import celery
-from chef_client_common.chef_client import set_up_chef_client, run_chef
+from chef_client_common.chef_client import run_chef
 
 
 @celery.task
-@set_up_chef_client
 def install(chef_install_runlist=None, chef_attributes=None, **kwargs):
-    run_chef(chef_install_runlist, chef_attributes)
+    run_chef(chef_install_runlist, chef_attributes, **kwargs)
 
 
 @celery.task
-@set_up_chef_client
 def start(__cloudify_id, policy_service, chef_start_runlist=None, chef_attributes=None, **kwargs):
-    run_chef(chef_start_runlist, chef_attributes)
+    run_chef(chef_start_runlist, chef_attributes, **kwargs)
     host = get_cosmo_properties()['ip']
     send_event(__cloudify_id, host, policy_service, "state", "running")
 
 
 @celery.task
-@set_up_chef_client
 def stop(chef_stop_runlist=None, chef_attributes=None, **kwargs):
-    run_chef(chef_stop_runlist, chef_attributes)
+    run_chef(chef_stop_runlist, chef_attributes, **kwargs)
 
 
 @celery.task
-@set_up_chef_client
 def restart(chef_start_runlist=None, chef_stop_runlist=None, chef_attributes=None, **kwargs):
-    run_chef(chef_stop_runlist, chef_attributes)
-    run_chef(chef_start_runlist, chef_attributes)
+    run_chef(chef_stop_runlist, chef_attributes, **kwargs)
+    run_chef(chef_start_runlist, chef_attributes, **kwargs)
 
 
 @celery.task
-@set_up_chef_client
 def uninstall(chef_uninstall_runlist=None, chef_attributes=None, **kwargs):
-    run_chef(chef_uninstall_runlist, chef_attributes)
+    run_chef(chef_uninstall_runlist, chef_attributes, **kwargs)
